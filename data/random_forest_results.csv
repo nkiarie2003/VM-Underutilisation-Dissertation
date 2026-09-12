@@ -1,5 +1,0 @@
-experiment,n_features,accuracy_pct,precision_pct,recall_pct,f1_pct,cv_f1_pct
-Azure-inspired threshold baseline,0,88.5,80.3,94.9,87.0,
-A: Main Random Forest,10,99.6,99.0,100.0,99.5,98.0
-B: Ablation,2,78.6,72.8,75.8,74.3,78.1
-Baseline: Majority class,0,59.3,0.0,0.0,0.0,
