@@ -1,0 +1,167 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+
+    <title>
+        {% block title %}
+            VM Capacity Advisor
+        {% endblock %}
+    </title>
+
+
+    <!-- Fonts -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- Main stylesheet -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         Header
+         ===================================================== -->
+
+    <header class="masthead">
+
+        <div class="wrap masthead-inner">
+
+
+            <a
+                class="brand"
+                href="{{ url_for('dashboard') }}"
+            >
+
+                <span class="brand-mark"></span>
+
+
+                <span class="brand-text">
+
+                    <strong>
+                        Capacity Advisor
+                    </strong>
+
+                    <em>
+                        virtual machine utilisation review
+                    </em>
+
+                </span>
+
+            </a>
+
+
+            <nav class="nav">
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                >
+                    Fleet
+                </a>
+
+
+                <a
+                    href="{{ url_for('upload') }}"
+                >
+                    Analyse a file
+                </a>
+
+
+                <a
+                    href="{{ url_for('review') }}"
+                >
+                    Review queue
+                </a>
+
+            </nav>
+
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         Main content
+         ===================================================== -->
+
+    <main class="wrap">
+
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                <div class="flash-area">
+
+                    {% for message in messages %}
+
+                        <p class="notice">
+                            {{ message }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        {% block content %}
+        {% endblock %}
+
+
+    </main>
+
+
+    <!-- =====================================================
+         Footer
+         ===================================================== -->
+
+    <footer class="wrap foot">
+
+        Random Forest classifier, 300 trees.
+
+        Recommendations are advisory and require
+        administrator confirmation.
+
+    </footer>
+
+
+</body>
+
+</html>

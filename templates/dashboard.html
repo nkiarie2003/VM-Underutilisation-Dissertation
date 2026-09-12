@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Capacity Advisor{% endblock %}
+
+{% block content %}
+
+<section class="page-head">
+
+    <p class="eyebrow">VM CAPACITY ADVISOR</p>
+
+    <h1>Virtual Machine Analysis</h1>
+
+    <p class="page-intro">
+        Azure-inspired threshold baseline vs Random Forest.
+        Confidence determines the final recommendation.
+    </p>
+
+</section>
+
+
+<section class="metric-grid">
+
+    <div class="panel metric-card">
+        <span class="metric-label">VMs analysed</span>
+        <strong class="metric-value">{{ stats.total }}</strong>
+        <span class="metric-note">Research dataset</span>
+    </div>
+
+    <div class="panel metric-card">
+        <span class="metric-label">Shutdown</span>
+        <strong class="metric-value">{{ stats.shutdown }}</strong>
+        <span class="metric-note">High-confidence cases</span>
+    </div>
+
+    <div class="panel metric-card">
+        <span class="metric-label">Resize</span>
+        <strong class="metric-value">{{ stats.resize }}</strong>
+        <span class="metric-note">Medium-confidence cases</span>
+    </div>
+
+    <div class="panel metric-card">
+        <span class="metric-label">Model disagreements</span>
+        <strong class="metric-value">
+            {{ stats.model_disagreements }}
+        </strong>
+        <span class="metric-note">Baseline vs Random Forest</span>
+    </div>
+
+</section>
+
+
+<section class="panel simple-info">
+
+    <strong>How it works</strong>
+
+    <span>
+        VM data → Baseline + Random Forest → Confidence →
+        Recommendation → Human Review
+    </span>
+
+</section>
+
+
+<section class="panel fleet-panel">
+
+    <div class="fleet-heading">
+
+        <div>
+            <p class="eyebrow">MODEL COMPARISON</p>
+            <h2>VM predictions</h2>
+        </div>
+
+        <a
+            class="button"
+            href="{{ url_for('review') }}"
+        >
+            Human Review
+        </a>
+
+    </div>
+
+
+    <form
+        class="filters"
+        method="get"
+    >
+
+        <label>
+            Recommendation
+
+            <select name="recommendation">
+
+                <option value="">
+                    All
+                </option>
+
+                <option
+                    value="Shutdown"
+                    {% if recommendation == "Shutdown" %}
+                    selected
+                    {% endif %}
+                >
+                    Shutdown
+                </option>
+
+                <option
+                    value="Resize"
+                    {% if recommendation == "Resize" %}
+                    selected
+                    {% endif %}
+                >
+                    Resize
+                </option>
+
+                <option
+                    value="No Action"
+                    {% if recommendation == "No Action" %}
+                    selected
+                    {% endif %}
+                >
+                    No Action
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+            Confidence
+
+            <select name="confidence">
+
+                <option value="">
+                    All
+                </option>
+
+                <option
+                    value="High"
+                    {% if confidence == "High" %}
+                    selected
+                    {% endif %}
+                >
+                    High
+                </option>
+
+                <option
+                    value="Medium"
+                    {% if confidence == "Medium" %}
+                    selected
+                    {% endif %}
+                >
+                    Medium
+                </option>
+
+                <option
+                    value="Low"
+                    {% if confidence == "Low" %}
+                    selected
+                    {% endif %}
+                >
+                    Low
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+            Comparison
+
+            <select name="comparison">
+
+                <option value="">
+                    All
+                </option>
+
+                <option
+                    value="disagree"
+                    {% if comparison == "disagree" %}
+                    selected
+                    {% endif %}
+                >
+                    Disagreements only
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <button
+            class="button button-primary"
+            type="submit"
+        >
+            Filter
+        </button>
+
+    </form>
+
+
+    <div class="table-shell">
+
+        <table class="fleet-table">
+
+            <thead>
+
+                <tr>
+                    <th>VM</th>
+                    <th>Baseline</th>
+                    <th>Random Forest</th>
+                    <th>Confidence</th>
+                    <th>Recommendation</th>
+                    <th>Comparison</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for row in rows %}
+
+                <tr>
+
+                    <td class="mono">
+                        {{ row.vm_id }}
+                    </td>
+
+
+                    <td>
+
+                        {% if row.baseline_underutilised %}
+
+                            Underutilised
+
+                        {% else %}
+
+                            Not flagged
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if row.predicted_underutilised %}
+
+                            Underutilised
+
+                        {% else %}
+
+                            Not flagged
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <strong class="mono">
+                            {{ "%.0f"|format(row.confidence * 100) }}%
+                        </strong>
+
+                        <span class="muted">
+                            {{ row.confidence_band }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if row.recommendation == "Shutdown" %}
+
+                            <span class="
+                                recommendation
+                                recommendation-shutdown
+                            ">
+                                Shutdown
+                            </span>
+
+                        {% elif row.recommendation == "Resize" %}
+
+                            <span class="
+                                recommendation
+                                recommendation-resize
+                            ">
+                                Resize
+                            </span>
+
+                        {% else %}
+
+                            <span class="
+                                recommendation
+                                recommendation-none
+                            ">
+                                No Action
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if row.models_agree %}
+
+                            <span class="muted">
+                                Agree
+                            </span>
+
+                        {% else %}
+
+                            <strong class="disagreement">
+                                Disagree
+                            </strong>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div class="table-foot">
+
+        Showing {{ showing }} of
+        {{ total_matching }} matching VMs.
+
+        Recommendations require human review
+        before infrastructure changes.
+
+    </div>
+
+</section>
+
+{% endblock %}

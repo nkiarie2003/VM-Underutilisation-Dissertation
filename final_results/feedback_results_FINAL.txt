@@ -1,0 +1,76 @@
+FINAL FEEDBACK EXPERIMENT
+Date frozen: 28 August 2026
+
+Dataset:
+1213 VMs
+
+Reference labels:
+False = 721
+True = 492
+
+Experimental design:
+20 paired random seeds
+679 initial training VMs per run
+291 feedback-pool VMs per run
+243 untouched final-test VMs per run
+5 feedback cycles
+20 reviewed VMs per cycle
+
+CONFIDENCE-TARGETED FEEDBACK
+
+Cycle 0 mean F1 = 96.66%
+Cycle 1 mean F1 = 98.06%
+Cycle 2 mean F1 = 98.29%
+Cycle 3 mean F1 = 98.21%
+Cycle 4 mean F1 = 98.21%
+Cycle 5 mean F1 = 98.13%
+
+Cycle 5 SD = 0.85%
+Overall improvement = +1.47 percentage points
+
+RANDOM-SELECTION CONTROL
+
+Cycle 0 mean F1 = 96.66%
+Cycle 5 mean F1 = 97.16%
+
+Cycle 5 SD = 1.12%
+Overall improvement = +0.50 percentage points
+
+FINAL COMPARISON
+
+Mean paired Cycle 5 difference = +0.975 percentage points
+
+Paired t-test:
+t = 4.357
+p = 0.0003
+
+Wilcoxon signed-rank test:
+W = 6.0
+p = 0.0013
+
+INTERPRETATION
+
+Confidence-targeted feedback produced a statistically significant
+but small improvement in F1 compared with random feedback selection
+across the 20 paired runs.
+
+Most of the improvement occurred during the early feedback cycles,
+with the highest mean F1 of 98.29% occurring at Cycle 2. Performance
+then plateaued, indicating diminishing returns.
+
+LIMITATIONS
+
+The starting F1 was already high, leaving limited room for improvement.
+
+Reference labels were generated using frozen heuristic rules rather
+than independent production ground truth.
+
+Administrator feedback was simulated using the frozen reference
+labels rather than being supplied by real Azure administrators.
+
+Therefore, this experiment evaluates the behaviour of the proposed
+feedback mechanism under controlled conditions and should not be
+interpreted as production validation.
+
+STATUS:
+FROZEN - DO NOT MODIFY THIS EXPERIMENT.

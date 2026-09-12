@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Analyse CSV | Capacity Advisor{% endblock %}
+
+{% block content %}
+
+<section class="page-head">
+    <p class="eyebrow">UPLOAD DATA</p>
+
+    <h1>Analyse VM Data</h1>
+
+    <p class="page-intro">
+        Upload VM utilisation data and generate predictions
+        using the trained Random Forest model.
+    </p>
+</section>
+
+
+<section class="panel simple-upload">
+
+    <h2>Upload CSV</h2>
+
+    <p class="muted">
+        Select a CSV containing the required VM utilisation features.
+    </p>
+
+    <p>
+        <a
+            class="button"
+            href="{{ url_for('sample_csv') }}"
+        >
+            Download sample CSV
+        </a>
+    </p>
+
+    {% if error %}
+        <p class="error-message">{{ error }}</p>
+    {% endif %}
+
+
+    <form method="post" enctype="multipart/form-data">
+
+        <input
+            type="file"
+            name="file"
+            accept=".csv"
+            required
+        >
+
+        <button class="button button-primary" type="submit">
+            Analyse
+        </button>
+
+    </form>
+
+
+    <details class="required-features">
+
+        <summary>Required CSV columns</summary>
+
+        <div class="feature-list">
+
+            <code>vm_id (optional)</code>
+
+            {% for feature in features %}
+                <code>{{ feature }}</code>
+            {% endfor %}
+
+        </div>
+
+    </details>
+
+</section>
+
+
+{% if results %}
+
+<section class="panel fleet-panel">
+
+    <div class="fleet-heading">
+        <div>
+            <p class="eyebrow">RESULTS</p>
+            <h2>{{ results|length }} VMs analysed</h2>
+        </div>
+    </div>
+
+
+    <div class="table-shell">
+
+        <table class="fleet-table">
+
+            <thead>
+                <tr>
+                    <th>VM</th>
+                    <th>Baseline</th>
+                    <th>Random Forest</th>
+                    <th>Confidence</th>
+                    <th>Recommendation</th>
+                </tr>
+            </thead>
+
+
+            <tbody>
+
+                {% for row in results %}
+
+                <tr>
+
+                    <td class="mono">
+                        {{ row.vm_id }}
+                    </td>
+
+
+                    <td>
+                        {% if row.baseline_underutilised %}
+                            Underutilised
+                        {% else %}
+                            Not flagged
+                        {% endif %}
+                    </td>
+
+
+                    <td>
+                        {% if row.predicted_underutilised %}
+                            Underutilised
+                        {% else %}
+                            Not flagged
+                        {% endif %}
+                    </td>
+
+
+                    <td>
+                        <strong>
+                            {{ "%.1f"|format(row.confidence * 100) }}%
+                        </strong>
+
+                        <span class="muted">
+                            {{ row.confidence_band }}
+                        </span>
+                    </td>
+
+
+                    <td>
+
+                        {% if row.recommendation == "Shutdown" %}
+
+                            <span class="recommendation recommendation-shutdown">
+                                Shutdown
+                            </span>
+
+                        {% elif row.recommendation == "Resize" %}
+
+                            <span class="recommendation recommendation-resize">
+                                Resize
+                            </span>
+
+                        {% else %}
+
+                            <span class="recommendation recommendation-none">
+                                No Action
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+{% endblock %}
